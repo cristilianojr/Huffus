@@ -13,6 +13,20 @@ Link: https://github.com/cristilianojr/Huffus
 """
 
 class Huffus:
+    """
+    HUFFUS
+
+    This class working with a huffman codification, to compress and decompress texts.
+
+    Author: Cristiliano Junior
+    Linkedin: https://www.linkedin.com/in/cristilianojr/
+    Github: https://github.com/cristilianojr
+
+
+    Repository:
+    Link: https://github.com/cristilianojr/Huffus
+    """
+
     def __init__(self, text: str) -> None:
         self.text: str = text
         self.compress_data: dict = {
@@ -72,26 +86,26 @@ class Huffus:
         """
         Builds a Huffman coding tree from a dictionary of character frequencies.
 
-        @param char_dict (dict): A dictionary containing character frequencies.
+        @param char_freq_dict (dict): A dictionary containing character frequencies.
 
         Returns:
             tuple: A tuple representing the root of the Huffman coding tree.
         """
 
-        char_freq_list: list = list(char_freq_dict.items())
+        huffman_tree: list = list(char_freq_dict.items())
 
-        while len(char_freq_list) != 1:
-            node_0 = list(char_freq_list.pop(0))
+        while len(huffman_tree) != 1:
+            node_0 = list(huffman_tree.pop(0))
 
-            node_1 = list(char_freq_list.pop(0))
+            node_1 = list(huffman_tree.pop(0))
 
             child_node = [[node_0, node_1], node_0[1] + node_1[1]]
 
-            char_freq_list.append(child_node)
+            huffman_tree.append(child_node)
 
-            char_freq_list = self.sort_list_tree(char_freq_list)
+            huffman_tree = self.sort_list_tree(huffman_tree)
 
-        return char_freq_list   
+        return huffman_tree   
     
 
     def encode(self, huffman_tree: list, sequence: str = '', code_words: dict = {}) -> str:
@@ -108,16 +122,30 @@ class Huffus:
 
 
     def decode(self, huffman_tree: list, code: str) -> str:
-        current = huffman_tree[0]
-        decoded: str = ''
+        """
+        Esta função irá receber a árvore e o código convertendo novamente para o texto.
+
+        @param huffman_tree (list): lista com todos os nós e da árvore.
+        @param code (str): código binário do texto
+
+        Retorna: uma string com o texto decodificado
+        """
+        current = huffman_tree[0] # Cria uma cópia do primeiro nó da árvore
+        decoded: str = '' # texto decodificado
+
         for bit in code:
+            # Para cada bit do código
             direction = 0 if bit == '0' else 1
+
+            # Acessa o primeiro elemento do nó e segue a direção determinada da árvore
             current = current[0][direction]
 
+            # Se o primeiro elemento do nó for uma string
             if isinstance(current[0], str):
-                decoded += current[0]
-                current = huffman_tree[0]
-
+                decoded += current[0] # adiciona no texto decodificado o caractere encontrado
+                current = huffman_tree[0] # reseta a árvore para o início do laço, assim reiniciando o processo
+        
+        # Retorna o texto decodificado
         return decoded
 
 
@@ -146,10 +174,11 @@ class Huffus:
 
     def decompress(self) -> str:
         """
-        Decompresses the contents of a binary variable that was previously compressed using
-        the `compress` method of this class
+        Descomprime o conteúdo de uma variável binária que foi
+        previamente compactada pelo o método `Compress` desta classe
 
-        Returns:
-            A string with decompressed data
+        Retorna:
+            Retorna o texto decodificado
         """
         return self.decode(self.compress_data['tree'], self.compress_data['code'])
+
